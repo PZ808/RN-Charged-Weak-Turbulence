@@ -408,7 +408,3 @@ Some radial coefficients involve large alternating sums of Pochhammer and gamma 
 
 This is an exploratory research code for weakly nonlinear near-horizon QNM dynamics and weak-turbulence-style amplitude equations. If you use or adapt this code, please cite the relevant accompanying notes or paper draft once available.
 
-## License
-
-Choose a license before making the repository public. For open academic use, common choices are MIT, BSD-3-Clause, or GPL-3.0.
-
