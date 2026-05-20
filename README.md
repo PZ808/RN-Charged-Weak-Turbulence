@@ -163,23 +163,49 @@ to machine precision in the current tests, while the raw near-zone tensor produc
   - Lyapunov exponent estimates.
 
 
+## Repository layout
+
+The original `coupling_coeffs.ipynb` notebook is now refactored into two
+sibling Python packages under `src/`:
+
+- **`rn_cwt`** — mode-coupling tensor and interaction-picture amplitude
+  ODE (the "stable foundation").
+- **`rn_cwt_nr`** — 1+1D charged-scalar KG PDE solver on the NHERN throat,
+  for cross-checking the amplitude ODE against direct numerical evolution.
+
+See [`src/README.md`](src/README.md) for the package-level docs (module map,
+S-convention, dependency direction, test commands). Diagnostic example
+scripts from PDE↔ODE validation work live under
+[`examples/diagnostics/`](examples/diagnostics/); the foundational examples
+that drive the workflow are in [`examples/`](examples/) directly.
+
 ## Installation
 
-Create and activate a Python environment, then install the core dependencies:
+Recommended (uses [`uv`](https://docs.astral.sh/uv/) for environment + lockfile):
+
+```bash
+uv venv                           # one-time
+uv pip install -e ".[dev]"        # editable install with pytest, jupyter
+uv run pytest                     # 71 tests, ~24 s
+uv run jupyter notebook coupling_coeffs.ipynb
+```
+
+Note: **run `uv run pytest` after a fresh clone** — the first time anything
+touches the S-table loader, the 214 MB Mathematica association
+`data/RN_ZDMs_4modeCoeffs_Neq1_coeffs_numeric.m` is regex-parsed (~30 s) and
+cached as a small pickle alongside (`*.m.pkl`, ignored by git). All
+subsequent test/example runs read the pickle in ~0.1 s. Running the test
+suite is the easiest way to build that cache.
+
+Alternatively, with a plain virtual environment:
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install numpy scipy sympy matplotlib jupyter
+pip install -e ".[dev]"
 ```
 
-Optional tools for development:
-
-```bash
-pip install ipykernel pytest black ruff
-```
-
-Then register the environment as a Jupyter kernel:
+Then register the environment as a Jupyter kernel (optional):
 
 ```bash
 python -m ipykernel install --user --name turbulent-modes --display-name "Python (turbulent-modes)"

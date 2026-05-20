@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+build/
+dist/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# uv
+uv.lock     # uncomment to ignore lockfile; keep tracked if reproducibility is desired
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Claude Code
+.claude/
+
+# Overleaf project mirror (separate notes repo)
+6a01cb81233ef2c25264ea80/
+
+# Generated data / caches (regeneratable from sources)
+data/*.pkl
+
+# Plot outputs from examples (regenerate on demand)
+examples/**/*.png
+
+# Local notebooks / scratch
+*.ipynb_checkpoints
