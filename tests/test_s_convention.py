@@ -1,6 +1,6 @@
 """Regression: ``S_near_abcd`` matches Peter's precomputed Mathematica data.
 
-The data file ``data/RN_ZDMs_4modeCoeffs_Neq1_coeffs_numeric.m`` (214 MB,
+The data file ``data/RN_ZDMs_4modeCoeffs_Neq1_Leq4_coeffs_numeric.m`` (214 MB,
 Mathematica association keyed by 4-tuples of (n, l, m) modes) was generated
 from Peter's ``SnearComponentNLM4`` in
 ``Mathematica/generate_4wave_coeffs.nb``. We standardize ``S_near_abcd`` on
@@ -20,7 +20,7 @@ from rn_cwt import S_near_abcd, S_near_paper, gamma_abcd, iq
 
 DATA_PATH = os.path.join(
     os.path.dirname(__file__), "..", "data",
-    "RN_ZDMs_4modeCoeffs_Neq1_coeffs_numeric.m",
+    "RN_ZDMs_4modeCoeffs_Neq1_Leq4_coeffs_numeric.m",
 )
 
 

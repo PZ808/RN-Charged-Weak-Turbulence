@@ -2,7 +2,7 @@
 
 The Mathematica notebook ``Mathematica/generate_4wave_coeffs.nb`` exports a
 214 MB association ``precomputedS1b234`` to
-``data/RN_ZDMs_4modeCoeffs_Neq1_coeffs_numeric.m`` containing high-precision
+``data/RN_ZDMs_4modeCoeffs_Neq1_Leq4_coeffs_numeric.m`` containing high-precision
 S-coefficients for all 4-mode combinations up to a certain (n, l, m) cutoff.
 
 Generating the table from scratch in Python via ``S_near_abcd`` would take
@@ -42,7 +42,7 @@ _DEFAULT_DATA_PATH = os.path.normpath(
         "..",
         "..",
         "data",
-        "RN_ZDMs_4modeCoeffs_Neq1_coeffs_numeric.m",
+        "RN_ZDMs_4modeCoeffs_Neq1_Leq4_coeffs_numeric.m",
     )
 )
 
@@ -89,7 +89,7 @@ def load_S_table(
     ----------
     path : str or None
         Path to the Mathematica .m file. Defaults to the repo's
-        ``data/RN_ZDMs_4modeCoeffs_Neq1_coeffs_numeric.m``.
+        ``data/RN_ZDMs_4modeCoeffs_Neq1_Leq4_coeffs_numeric.m``.
     cache_path : str or None
         Path to the pickle cache. Defaults to ``<path>.pkl``.
 

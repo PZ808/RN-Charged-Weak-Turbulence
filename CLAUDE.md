@@ -10,7 +10,7 @@ Python lives in three places:
 
 1. **`coupling_coeffs.ipynb`** — the original exploratory notebook. Source of all conventions; **its stored output cells are stale** (see "Notebook stored outputs are stale" below).
 2. **`src/rn_cwt/`** — importable modules extracted from the notebook: `background.py`, `angular.py`, `radial.py`, `coupling.py`, `evolution.py`, `precomputed.py`, `diagnostics.py`.
-3. **`src/rn_cwt_nr/`** — 1+1D PDE solver for NR cross-validation: `coords.py`, `grid.py`, `pde_linear.py`, `solver.py`, `projection.py`. Imports from `rn_cwt`, never the other way. Keep that separation when extending.
+3. **`src/rn_cwt_nr/`** — 1+1D PDE solver for NR cross-validation: `coords.py`, `grid.py`, `pde.py`, `solver.py`, `projection.py`. Imports from `rn_cwt`, never the other way. Keep that separation when extending.
 
 Both packages are installed via the top-level `pyproject.toml`. See `src/README.md` for the module map.
 
@@ -55,7 +55,7 @@ The mode-coupling pipeline has four conceptual layers:
 Scomp_j = (-1)^{j+γ} Γ(1+j+γ) Γ(-1-j-2γ-2iq) / [Γ(-2iq-γ)]²
 ```
 
-i.e. matches Peter's `SnearComponentNLM4` in `Mathematica/generate_4wave_coeffs.nb` and the draft paper §10. Verified by `tests/test_s_convention.py` against Peter's precomputed data file `data/RN_ZDMs_4modeCoeffs_Neq1_coeffs_numeric.m` (~880 entries, worst-case relative error 1e-12).
+i.e. matches Peter's `SnearComponentNLM4` in `Mathematica/generate_4wave_coeffs.nb` and the draft paper §10. Verified by `tests/test_s_convention.py` against Peter's precomputed data file `data/RN_ZDMs_4modeCoeffs_Neq1_Leq4_coeffs_numeric.m` (~880 entries, worst-case relative error 1e-12).
 
 `S_near_paper` is exposed as an explicit alias for `S_near_abcd`.
 
@@ -96,7 +96,7 @@ with `V(r_*) = q² x̆² - m²_eff x̆(x̆+1)` and the 1/(4π) from the |Y_00|²
 
 Method of lines: 4th-order centered FD in r_* + DOP853 in time (`scipy.integrate.solve_ivp`, rtol=1e-8, atol=1e-10). Sommerfeld outgoing-at-horizon BC (`horizon_bc="outgoing"`, default) — exact in the x̆→0 limit where friction and potential vanish. Dirichlet at the throat side (`throat_bc="dirichlet"`); causes reflection that arrives at sample r_* at t = distance-to-throat, so usable integration window is bounded by that.
 
-A compactified-y variant exists in `pde_linear.py::linear_kg_rhs_compact` (Dirichlet at both endpoints of the y∈(-1, 0) tanh-compact domain) for tests.
+A compactified-y variant exists in `pde.py::kg_rhs_compact` (Dirichlet at both endpoints of the y∈(-1, 0) tanh-compact domain) for tests.
 
 ## PDE ↔ ODE validation status (as of 2026-05-20)
 

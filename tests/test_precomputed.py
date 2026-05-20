@@ -1,6 +1,6 @@
 """Regression tests for Peter's precomputed S-table loader.
 
-Tests pull from ``data/RN_ZDMs_4modeCoeffs_Neq1_coeffs_numeric.m`` (or its
+Tests pull from ``data/RN_ZDMs_4modeCoeffs_Neq1_Leq4_coeffs_numeric.m`` (or its
 pickle cache); skipped if neither is present.
 """
 import os

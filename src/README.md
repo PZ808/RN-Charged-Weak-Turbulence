@@ -30,7 +30,7 @@ modules. Provides:
   via `integrate_A_notes(...)`. `phase_mode` ∈ {`real`, `exact`, `resonant`}
   (the README in the project root documents the trade-offs).
 - **`precomputed`** — Parser and pickle cache for Peter's S-table
-  (`data/RN_ZDMs_4modeCoeffs_Neq1_coeffs_numeric.m`).
+  (`data/RN_ZDMs_4modeCoeffs_Neq1_Leq4_coeffs_numeric.m`).
 - **`diagnostics`** — Mode labels and solution-printing helpers.
 
 The S-convention is the paper / Mathematica form throughout; see CLAUDE.md for

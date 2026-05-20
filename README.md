@@ -192,7 +192,7 @@ uv run jupyter notebook coupling_coeffs.ipynb
 
 Note: **run `uv run pytest` after a fresh clone** — the first time anything
 touches the S-table loader, the 214 MB Mathematica association
-`data/RN_ZDMs_4modeCoeffs_Neq1_coeffs_numeric.m` is regex-parsed (~30 s) and
+`data/RN_ZDMs_4modeCoeffs_Neq1_Leq4_coeffs_numeric.m` is regex-parsed (~30 s) and
 cached as a small pickle alongside (`*.m.pkl`, ignored by git). All
 subsequent test/example runs read the pickle in ~0.1 s. Running the test
 suite is the easiest way to build that cache.
