@@ -16,8 +16,10 @@ with
 ```math
 \Omega_{\lambda i j k}
 =
-\omega_\lambda+\omega_k-\omega_i-\omega_j.
+\omega_\lambda+\omega_k-\omega_i-\omega_j,
 ```
+
+together with its large-$\ell$ continuum limit.
 
 The code is designed to separate the angular and radial pieces of the interaction coefficient,
 
@@ -42,7 +44,8 @@ The main goals are:
 - construct reliable mode-coupling tensors from angular Gaunt/Wigner coefficients and near-zone radial coefficients;
 - evolve weakly nonlinear finite-mode systems in an interaction picture;
 - separate Hamiltonian and non-Hamiltonian pieces of the near-horizon dynamics;
-- study resonant energy sharing, nonlinear normal modes, stability islands, and possible attractor-like behavior.
+- study resonant energy sharing, nonlinear normal modes, stability islands, and possible attractor-like behavior;
+- determine whether the resulting weak-turbulence problem supports a constant-flux (Kolmogorov–Zakharov) cascade.
 
 ## Current model
 
@@ -132,6 +135,48 @@ N=\sum_\lambda |A_\lambda|^2
 
 to machine precision in the current tests, while the raw near-zone tensor produces a small secular drift consistent with the non-Hermitian correction.
 
+That drift is not only a numerical nuisance. In the stirred large-$\ell$ problem the anti-Hermitian part `C_A` turns out to drive a pump-sustained linear instability of the high-$\ell$ band, which the Hamiltonian projection removes entirely; see the next section.
+
+## Large-$\ell$ asymptotics and stirring
+
+[`Large_ell/`](Large_ell/) carries a self-contained programme that pushes the coupling tensor to large multipole and asks whether the system sustains a turbulent cascade. The analysis note is `large_ell_stirring.tex` / `.pdf`; the raw output of every run quoted in it is under [`paper/4_waves_RN/logs/`](paper/4_waves_RN/logs/).
+
+The enabling step is an exact reduction of the magnetic sum to a single multipole sum,
+
+```math
+\sum_{\text{all }m}\left|Q^{12}_{34}\right|^{2}
+=
+\sum_L\frac{\mathcal G^{2}_{\ell_1\ell_2L}\,\mathcal G^{2}_{\ell_3\ell_4L}}{2L+1},
+```
+
+together with closed forms for the near-zone overlap evaluated entirely in log space, so that the cancelling factors $2^{\pm H}$ never appear separately. Between them these take `lmax` from about 7 to 40–60 for the full axisymmetric tensor, and to several hundred for the $m$-averaged shell kernel.
+
+Main results:
+
+- **The real frequency is exactly degenerate.** $\mathrm{Re}\,\nu=\hat q/2$ for every $(n,\ell)$, so the detuning vanishes identically and every quartet is exactly resonant. A corollary is that the energy is proportional to the action: there is one invariant, hence one equilibrium and one cascade candidate, and no dual cascade.
+- **The overtone staircase does not survive normalisation.** The $\ell^{-\lfloor(N_S+1)/2\rfloor-1/2}$ suppression of the bare overlap is cancelled almost exactly by the overtone content of the normalisation, leaving $\ell^{-1/2}$ for odd total overtone number $N_S$ and no suppression at all for even. The decay in $n$ at fixed $\ell$ is only algebraic, $R_n\to n^{-1/2}$. Consequence for finite-mode work: of the 819 active quartets in the nine-mode truncation used in the paper draft, only 19 have all $n=0$, and they carry 17.9% of $\sum|C|^2$.
+- **The anti-Hermitian part drives an instability.** Linearising about a band-limited pump, every eigenvalue of the response operator has positive real part at zero damping; the Hamiltonian projection is neutral on the $n=0$ tower. The instability is cut off by QNM damping at $\sigma<\rho_c\,\alpha|c_{\rm low}|^2\epsilon^2$ with $\rho_c=3.19\pm1.40$ over pump phases (24 of 24 random pumps unstable). Its kinetic counterpart is a loss of the $k\leftrightarrow\lambda$ symmetry of the collision kernel once overtones are present, which produces action at a few per cent of the injection rate.
+- **There is no Kolmogorov–Zakharov cascade.** The shell flux never plateaus and the interior spread saturates under cutoff refinement. The Zakharov transform gives $y=3x-\gamma-4$ and $x_{\rm KZ}=(4+\gamma)/3\to1$, but the collision integral does not converge there: the UV edge, measured directly rather than power-counted, is at $x=1.096$, while infrared insensitivity requires $x<1$. The locality window is empty. The dominant configurations are $(p,p,O(1))$ — two legs at the UV cutoff and one at the infrared cutoff — so high-$\ell$ shells couple directly to the pump rather than to their neighbours.
+- **The principal branch is not a way out.** At large $\hat q$ the band $\ell(\ell+1)+\tfrac14<\hat q^2$ has $h=\tfrac12-i\mu_\ell$, $\ell$-independent damping $\Gamma=(n+\tfrac12)/2$, a real frequency ladder and a thin resonant manifold — structurally the near-extremal Kerr tower. But it is also the band on which the symmetric bilinear form $\int\psi^2$ that makes these modes orthogonal collapses (14.6 to $2.6\times10^{-11}$ across $\ell=1\ldots11$ at $\hat q=12$), so the normalised couplings grow like $e^{3\pi(\hat q-\mu_\ell)}$ and weak nonlinearity fails before any inertial range can be used.
+
+### Modules
+
+| module | purpose |
+| --- | --- |
+| `_project_path.py` | locates the repository root so the folder can live anywhere |
+| `large_ell_backend.py` | vectorised `n = 0` coupling tensor and `m`-averaged shell kernel |
+| `large_ell_overtones.py` | overtone-resolved tensor, via a rational recursion on top of the `n = 0` closed form |
+| `large_ell_principal.py` | continuation to complex `h` (principal branch) |
+| `large_ell_checks.py` | asymptotics suite A–E, with an mpmath path for high precision |
+| `large_ell_program.py` | pump operator, band stability, stationary solution, forced–dissipative kinetics |
+| `large_ell_overtone_program.py` | overtone audit (conditioning, the overtone law, the nine-mode set, the programme rerun) |
+| `large_ell_zakharov.py` | Zakharov transform, homogeneity degree, locality |
+| `large_ell_branch_test.py` | principal-branch spectrum, normalisation collapse, resonance broadening |
+| `large_ell_extra_checks.py` | UV tail exponent and the collapse measured from the project code alone |
+| `large_ell_verify.py` | independent verification suite V1–V5 |
+
+Each back end is validated against `coupling_coefficients_stable` at small `l` — relative errors between `1e-11` and `1e-16` on every assembled object — and none of them import or modify it outside their `validate()` functions.
+
 ## Features
 
 - **Angular coupling coefficients** using Wigner 3j/Gaunt formulas:
@@ -162,6 +207,11 @@ to machine precision in the current tests, while the raw near-zone tensor produc
   - relative equilibrium / nonlinear normal mode searches;
   - Lyapunov exponent estimates.
 
+- **Large-$\ell$ / weak-turbulence tools** (see above):
+  - log-space closed forms and the exact magnetic-sum reduction;
+  - overtone-resolved and principal-branch continuations;
+  - shell kernel, forced–dissipative kinetics, and shell-flux diagnostics;
+  - Zakharov transform and direct locality measurement.
 
 ## Repository layout
 
@@ -178,6 +228,12 @@ S-convention, dependency direction, test commands). Diagnostic example
 scripts from PDE↔ODE validation work live under
 [`examples/diagnostics/`](examples/diagnostics/); the foundational examples
 that drive the workflow are in [`examples/`](examples/) directly.
+
+The large-$\ell$ programme is deliberately kept outside the packages, in
+[`Large_ell/`](Large_ell/), together with the analysis note it supports. It
+depends on `coupling_coefficients_stable` only for validation, and finds it by
+walking up from its own location (`_project_path.py`), so the folder can be
+moved without editing any imports.
 
 ## Installation
 
@@ -285,6 +341,19 @@ print("relative drift =", (N[-1] - N[0]) / N[0])
 
 For `C_H`, the drift should be at the level of numerical roundoff. For the raw tensor `C`, the drift scales approximately like `eps**2` in the current tests.
 
+### 6. Large-$\ell$ tensors
+
+```python
+from large_ell_backend import Backend
+
+be = Backend(qhat=0.6, rplus=1.0, lmax=40)
+C, ells = be.C_axisymmetric(alpha=1.0, lmin=1)   # 1.0 s, 41 MB
+W, _    = be.W_shell(lmin=1)                     # m-averaged shell kernel
+```
+
+Run `python large_ell_verify.py` from `Large_ell/` to revalidate all three
+back ends against `coupling_coefficients_stable`.
+
 ## Diagnostics
 
 ### Modal power exchange
@@ -360,6 +429,10 @@ an exact complex interaction phase contains factors of the form
 
 This may overflow for long integrations if nonresonant quartets have positive growth exponent. For exploratory Hamiltonian dynamics, use `phase_mode="real"` or a resonant truncation.
 
+Note that on the supplementary branch the *real* detuning vanishes identically,
+$\mathrm{Re}\,\nu=\hat q/2$ for every mode, so `phase_mode="real"` makes every
+quartet resonant. This is a property of the spectrum, not a bug.
+
 ## Physical versus interaction amplitudes
 
 The evolution is usually performed for interaction-picture amplitudes `A`. To reconstruct the softened/physical amplitude, use
@@ -412,13 +485,37 @@ eta ~ 1:     near-horizon non-Hermitian dynamics with possible attractor-like be
 
 ## Notes on numerical precision
 
-Some radial coefficients involve large alternating sums of Pochhammer and gamma functions. For large overtone numbers, the result can be sensitive to summation order and floating-point cancellation. Recommended checks:
+The radial coefficient is a finite alternating sum over `j` of Pochhammer and
+gamma products. The cancellation in that sum is *structural*, not incidental:
+it is the same cancellation that produces the overtone staircase, so it gets
+worse exactly where the physics gets interesting. Measured against 120-digit
+arithmetic, the relative error of the double-precision sum is, with
+`N_S` the total overtone number of the quartet:
+
+| `N_S` | `l = 2` | `l = 8` | `l = 32` |
+| --- | --- | --- | --- |
+| 0 | 3.7e-15 | 1.1e-14 | 7.3e-14 |
+| 4 | 2.8e-14 | 2.3e-13 | 3.2e-12 |
+| 8 | 4.8e-12 | 1.2e-09 | 2.2e-08 |
+| 12 | 1.3e-09 | 3.9e-07 | 5.7e-04 |
+| 16 | 6.5e-08 | 1.1e-04 | 5.9e+00 |
+
+Double precision is therefore safe to `N_S <= 4` at any `l`, and to `N_S = 8`
+up to `l ~ 30`; beyond that the overlap needs extended precision. This affects
+`S_near_abcd` exactly as it affects the new back ends — the two agree with each
+other to the digits they both have, and lose the same digits together.
+`large_ell_checks.py` provides an mpmath path for the regimes where that
+matters.
+
+Other recommended checks:
 
 - compare direct nested sums with convolution-based sums;
 - test symmetry under permutation of unbarred radial slots;
-- use higher precision for large `n` sectors if necessary;
 - cache Wigner 3j symbols and radial coefficients;
-- validate small-mode results against direct integration where possible.
+- validate small-mode results against direct integration where possible;
+- on the principal branch, remember that the conjugated slot carries
+  $\bar h=1-h$, not $h$ — the distinction is invisible for real `h` and
+  rescales the overlap by $e^{O(\mu)}$ when `h` is complex.
 
 ## Roadmap
 
@@ -430,7 +527,21 @@ Some radial coefficients involve large alternating sums of Pochhammer and gamma 
 - [ ] Add optional high-precision radial coefficient backend.
 - [ ] Compare Python evolution against the Mathematica notebook workflow.
 
+Large-$\ell$ programme:
+
+- [ ] Analytic account of the mixed UV–infrared corner `(p, p, O(1))` that
+      dominates the collision integral, to turn the measured empty locality
+      window into a proof.
+- [ ] Overtones at large `l` *and* large `n` together: the overtone sum is cut
+      off by the near-extremal bound `n << r_+/sigma`, not by the coupling.
+- [ ] A positive-definite norm for the principal-branch modes, to make the
+      collapse a statement about physical amplitudes rather than about the
+      normalisation convention.
+- [ ] Non-axisymmetric coherent sector; the shell kernel already handles all
+      `m` kinetically.
+- [ ] Multi-charge model, in which the cascade label *is* the protecting
+      charge — the structural feature RN lacks and Kerr has.
+
 ## Citation / acknowledgement
 
 This is an exploratory research code for weakly nonlinear near-horizon QNM dynamics and weak-turbulence-style amplitude equations. If you use or adapt this code, please cite the relevant accompanying notes or paper draft once available.
-
